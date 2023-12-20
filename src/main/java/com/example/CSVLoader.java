@@ -24,10 +24,9 @@ public class CSVLoader {
         }
     }
 
-    // method to write instructor data
     public static void writeInstructor(Instructor instructor, String fileName) {
         if (exists(fileName)) {
-            HashSet<Integer> uniqueIds = getAllID(fileName);
+            HashSet<Integer> uniqueIds = getAllUniqueIDs(fileName);
             if (uniqueIds != null && !uniqueIds.contains(instructor.instructorID)) {
                 try (PrintWriter writer = new PrintWriter(new FileWriter(fileName, true))) {
                     if (countEntries(fileName) == 0) {
@@ -41,10 +40,9 @@ public class CSVLoader {
         }
     }
 
-    // method to write participant data
     public static void writeparticipant(Participant participant, String fileName) {
         if (exists(fileName)) {
-            HashSet<Integer> uniqueIDs = getAllID(fileName);
+            HashSet<Integer> uniqueIDs = getAllUniqueIDs(fileName);
             if (uniqueIDs != null && !uniqueIDs.contains(participant.participantID)) {
                 try (PrintWriter writer = new PrintWriter(new FileWriter(fileName, true))) {
                     if (countEntries(fileName) == 0) {
@@ -58,9 +56,10 @@ public class CSVLoader {
         }
     }
 
-    public static HashSet<Integer> getAllID(String fileName) {
+    public static HashSet<Integer> getAllUniqueIDs(String fileName) {
         if (exists(fileName)) {
             try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+                String header = reader.readLine();
                 HashSet<Integer> uniqueIDs = new HashSet<>();
                 String line;
                 while ((line = reader.readLine()) != null) {
@@ -77,7 +76,6 @@ public class CSVLoader {
         return null;
     }
 
-    // method to count entries in file
     public static int countEntries(String fileName) {
         if (exists(fileName)) {
             int lines = 0;
@@ -96,7 +94,6 @@ public class CSVLoader {
         }
     }
 
-    // method to check if file exists or not
     public static boolean exists(String fileName) {
         Path path = Path.of(fileName);
         return Files.exists(path);

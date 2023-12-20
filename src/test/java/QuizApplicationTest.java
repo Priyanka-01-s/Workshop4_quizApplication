@@ -73,4 +73,30 @@ class QuizApplicationTest {
         assertEquals(participantName, participant.getName(), "Participant name should be set correctly");
     }
 
+    @Test
+    void testQuizCreationAndAttempt() {
+        int quizID = 1;
+        Quiz quiz = new Quiz(quizID);
+        Participant participant = new Participant(1, "John Doe");
+        String simulatedInput = "1\n2\n3\n4\n1\neasy\n";
+        InputStream inputStream = new ByteArrayInputStream(simulatedInput.getBytes());
+        Scanner simulatedScanner = new Scanner(inputStream);
+        int participantScore = quiz.TakeQuiz(simulatedScanner);
+
+        // Assert
+        assertNotNull(participant.getScore(quizID), "Participant score should not be null");
+        assertTrue(participantScore >= 0, "Participant score should be non-negative");
+    }
+
+    @Test
+    void testRandomizedQuestions() {
+        int quizID = 2;
+        Quiz quiz = new Quiz(quizID);
+        int numQuestionsBeforeRandomization = quiz.getQuestions().size();
+        quiz.randomizedQues();
+        int numQuestionsAfterRandomization = quiz.getQuestions().size();
+        assertEquals(numQuestionsBeforeRandomization, numQuestionsAfterRandomization,
+                "Number of questions should remain the same after randomization");
+    }
+
 }

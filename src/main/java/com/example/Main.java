@@ -180,7 +180,7 @@ public class Main {
                 Quiz participant_quiz = quizzes.get(play_quiz_id);
                 Integer score = participant_quiz.TakeQuiz(sc);
                 participants.get(participant_id).updateScore(play_quiz_id, score);
-                System.out.println("\nQuiz Completed successfully. Your score is " + score + "%\n");
+                System.out.println("\nQuiz Completed successfully. Your score is " + score);
             } else {
                 throw new QuizNotFoundException("Quiz not found!\n");
             }

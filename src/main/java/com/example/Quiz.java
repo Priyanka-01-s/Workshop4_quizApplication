@@ -10,7 +10,7 @@ import java.util.TimerTask;
 public class Quiz {
     int quizID;
     ArrayList<Question> questions;
-    private static final int TIME_LIMIT = 30;
+    private static final int TIME_LIMIT = 5;
     private boolean randomized;
 
     public Quiz(int quizID) {
