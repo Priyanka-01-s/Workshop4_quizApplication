@@ -9,6 +9,7 @@ public class Main {
 
     public static final String INSTRUCTOR_CSV_PATH = "QuizFile.csv";
     public static final String participant_CSV_PATH = "Participants.csv";
+    public static final String QUIZ_CSV_PATH = "Quiz.csv";
     public static HashMap<Integer, Quiz> quizzes = new HashMap<>();
     public static HashMap<Integer, Participant> participants = new HashMap<>();
     public static HashMap<Integer, Instructor> instructors = new HashMap<>();
@@ -18,6 +19,7 @@ public class Main {
             throws QuizNotFoundException, ParticipantNotFoundException, InstructorNotFoundException {
         CSVLoader.createFile(INSTRUCTOR_CSV_PATH);
         CSVLoader.createFile(participant_CSV_PATH);
+        CSVLoader.createFile(QUIZ_CSV_PATH);
         Scanner sc = new Scanner(System.in);
         System.out.println("--------------------QUIZ APPLICATION-------------------");
 
@@ -159,6 +161,7 @@ public class Main {
                 Quiz new_quiz = new Quiz(quiz_id);
                 quizzes.put(quiz_id, new_quiz);
                 instructors.get(instId).addQuiz(quiz_id, new_quiz);
+                CSVLoader.writeQuizToCSV(new_quiz, QUIZ_CSV_PATH);
             } else {
                 System.out.println("Quiz already exists!\n");
             }

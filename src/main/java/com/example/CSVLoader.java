@@ -30,7 +30,7 @@ public class CSVLoader {
             if (uniqueIds != null && !uniqueIds.contains(instructor.instructorID)) {
                 try (PrintWriter writer = new PrintWriter(new FileWriter(fileName, true))) {
                     if (countEntries(fileName) == 0) {
-                        writer.println("INSTRUCTOR ID,INSTRUCTOR Name");
+                        writer.println("INSTRUCTOR ID,INSTRUCTOR NAME");
                     }
                     writer.println(instructor.toString());
                 } catch (IOException exception) {
@@ -46,7 +46,7 @@ public class CSVLoader {
             if (uniqueIDs != null && !uniqueIDs.contains(participant.participantID)) {
                 try (PrintWriter writer = new PrintWriter(new FileWriter(fileName, true))) {
                     if (countEntries(fileName) == 0) {
-                        writer.println("participant ID,participant Name");
+                        writer.println("PARTICIPANT ID,PARTICIPANT NAME");
                     }
                     writer.println(participant.toString());
                 } catch (IOException exception) {
@@ -55,6 +55,42 @@ public class CSVLoader {
             }
         }
     }
+
+    // public static void writeQuizToCSV(Quiz quiz, String fileName) {
+    //     if (exists(fileName)) {
+    //         try (PrintWriter writer = new PrintWriter(new FileWriter(fileName, true))) {
+    //             if (countEntries(fileName) == 0) {
+    //                 writer.println("Quiz ID,QUESTIONS"); // Add other headers as needed
+    //             }
+    //             writer.println(quiz.getQuizID() + "," + quiz.getQuestions()); // Add other quiz details as needed
+    //         } catch (IOException exception) {
+    //             System.out.println(exception.getMessage());
+    //         }
+    //     }
+    // }
+    public static void writeQuizToCSV(Quiz quiz, String fileName) {
+        if (exists(fileName)) {
+            try (PrintWriter writer = new PrintWriter(new FileWriter(fileName, true))) {
+                if (countEntries(fileName) == 0) {
+                    writer.println("QUIZ ID,QUESTIONS"); 
+                }
+                StringBuilder questionsString = new StringBuilder();
+                for (Question question : quiz.getQuestions()) {
+                    questionsString.append(question.getQuestion()).append(";");
+                }
+    
+                // Remove the trailing semicolon
+                if (questionsString.length() > 0) {
+                    questionsString.setLength(questionsString.length() - 1);
+                }
+    
+                writer.println(quiz.getQuizID() + "," + questionsString.toString()); // Add other quiz details as needed
+            } catch (IOException exception) {
+                System.out.println(exception.getMessage());
+            }
+        }
+    }
+    
 
     public static HashSet<Integer> getAllUniqueIDs(String fileName) {
         if (exists(fileName)) {

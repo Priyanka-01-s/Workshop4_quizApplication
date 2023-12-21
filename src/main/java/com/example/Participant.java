@@ -29,7 +29,7 @@ public class Participant {
         if (this.participantQuiz.containsKey(quizID)) {
             return this.participantQuiz.get(quizID);
         } else {
-            System.out.println("Participant not found\n");
+            System.out.println("Quiz not found for participant\n");
             return Integer.MIN_VALUE;
         }
     }

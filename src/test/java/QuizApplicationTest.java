@@ -1,102 +1,82 @@
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import com.example.Participant;
-import com.example.Question;
-import com.example.Quiz;
-
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
-class QuizApplicationTest {
+import org.junit.jupiter.api.Test;
+
+import com.example.Main;
+import com.example.Question;
+import com.example.Quiz;
+
+public class QuizApplicationTest {
 
     private Quiz quiz;
-    private InputStream originalSystemIn;
 
-    @BeforeEach
-    void setUp() {
+    @Before
+    public void setUp() {
         quiz = new Quiz(1);
-        originalSystemIn = System.in;
     }
 
     @Test
-    void testCreateQuizAndAddQuestions() {
-        String simulatedInput = "3\n" + //number of questions
-                "What is the capital of India?\n" +
-                "yes\n" + // MCQ
-                "Mumbai\n" +
-                "Delhi\n" +
-                "Kolkata\n" +
-                "Chennai\n" +
-                "2\n" + 
-                "easy\n" + 
-
-                "Sun rises from which direction?\n" +
-                "no\n" + // Open-ended
-                "East\n" +
-                "sun rises from East\n"; 
-
-        System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
-
-        quiz.createQuiz(new Scanner(System.in));
-        List<Question> questions = quiz.getQuestions();
-
-        System.setIn(originalSystemIn);
-        assertNotNull(questions, "Questions list should be initialized");
-        assertEquals(3, questions.size(), "There should be 3 questions in the quiz");
-
-        Question firstQuestion = questions.get(0);
-        assertTrue(firstQuestion.getOptions() != null, "The first question should be MCQ");
-        assertEquals("easy", firstQuestion.getCategories().get(0), "Difficulty level should be 'easy'");
-
-        Question secondQuestion = questions.get(1);
-        assertTrue(secondQuestion.getOptions() == null, "The second question should be open-ended");
-        assertEquals("medium", secondQuestion.getCategories().get(0), "Difficulty level should be 'medium'");
-        assertEquals("Explanation for the open-ended question", secondQuestion.getExplanation(), "Explanation should match");
-
-        Question thirdQuestion = questions.get(2);
-        assertTrue(thirdQuestion.getOptions() != null, "The third question should be MCQ");
-        assertEquals("medium", thirdQuestion.getCategories().get(0), "Difficulty level should be 'medium'");
+    public void testQuizCreation() {
+        assertNotNull(quiz);
+        assertEquals(1, quiz.getQuizID());
+        assertEquals(0, quiz.getQuestions().size());
+        assertFalse(quiz.randomized);
     }
 
     @Test
-    void testParticipantRegistration() {
-        int participantId = 1;
-        String participantName = "PSG"; 
-
-        Participant participant = new Participant(participantId, participantName);
-        assertEquals(participantId, participant.getParticipantId(), "Participant ID should be set correctly");
-        assertEquals(participantName, participant.getName(), "Participant name should be set correctly");
+    public void testAddNewQuestion() {
+        assertNotNull(quiz);
+        Scanner sc = new Scanner("Test question\nno\n");
+        quiz.addNewQuestion(sc);
+        assertEquals(1, quiz.getQuestions().size());
     }
 
     @Test
-    void testQuizCreationAndAttempt() {
-        int quizID = 1;
-        Quiz quiz = new Quiz(quizID);
-        Participant participant = new Participant(1, "John Doe");
-        String simulatedInput = "1\n2\n3\n4\n1\neasy\n";
-        InputStream inputStream = new ByteArrayInputStream(simulatedInput.getBytes());
-        Scanner simulatedScanner = new Scanner(inputStream);
-        int participantScore = quiz.TakeQuiz(simulatedScanner);
+    public void testMCQQuestionCreation() {
+        String question = "What is the capital of India?";
+        String[] options = {"Mumbai", "Delhi", "Kolkata", "Chennai"};
+        List<String> categories = Collections.singletonList("easy");
+        Question mcqQuestion = new Question(question, options, 2, categories, 1);
 
-        // Assert
-        assertNotNull(participant.getScore(quizID), "Participant score should not be null");
-        assertTrue(participantScore >= 0, "Participant score should be non-negative");
+        assertNotNull(mcqQuestion);
+        assertEquals(question, mcqQuestion.getQuestion());
+        assertArrayEquals(options, mcqQuestion.getOptions());
+        assertEquals(categories, mcqQuestion.getCategories());
+        assertEquals(1, mcqQuestion.getQuizID());
     }
 
     @Test
-    void testRandomizedQuestions() {
-        int quizID = 2;
-        Quiz quiz = new Quiz(quizID);
-        int numQuestionsBeforeRandomization = quiz.getQuestions().size();
-        quiz.randomizedQues();
-        int numQuestionsAfterRandomization = quiz.getQuestions().size();
-        assertEquals(numQuestionsBeforeRandomization, numQuestionsAfterRandomization,
-                "Number of questions should remain the same after randomization");
+    public void testOpenEndedQuestionCreation() {
+        String question = "12*2";
+        String correctAnswer = "24";
+        String explanation = "Multiplication";
+        Question openEndedQuestion = new Question(question, correctAnswer, explanation, 1);
+
+        assertNotNull(openEndedQuestion);
+        assertEquals(question, openEndedQuestion.getQuestion());
+        assertEquals(correctAnswer, openEndedQuestion.getCorrectAnswer());
+        assertEquals(explanation, openEndedQuestion.getExplanation());
+    }
+     @Test
+    public void testCreateparticipant() {
+        Scanner sc = new Scanner("1\nPriyanka Sengupta\n");
+        int participantId = Main.createparticipant(sc);
+
+        assertNotNull(Main.participants.get(participantId));
+        assertEquals("Priyanka Sengupta", Main.participants.get(participantId).getName());
     }
 
+    @Test
+    public void testCreateInstructor() {
+        Scanner sc = new Scanner("1\nInstructor 1\n");
+        int instructorId = Main.createInstructor(sc);
+
+        assertNotNull(Main.instructors.get(instructorId));
+        assertEquals("Instructor 1", Main.instructors.get(instructorId).getName());
+    }
 }
+

@@ -14,6 +14,10 @@ public class Instructor {
         quizs = new HashMap<>();
     }
 
+    public String getName(){
+        return name;
+    }
+
     public void addQuiz(int quizID, Quiz quiz) {
         this.quizs.put(quizID, quiz);
     }

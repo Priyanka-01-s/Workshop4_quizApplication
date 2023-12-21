@@ -10,8 +10,8 @@ import java.util.TimerTask;
 public class Quiz {
     int quizID;
     ArrayList<Question> questions;
-    private static final int TIME_LIMIT = 5;
-    private boolean randomized;
+    private static final int TIME_LIMIT = 30;
+    public boolean randomized;
 
     public Quiz(int quizID) {
         Scanner sc = new Scanner(System.in);
@@ -34,7 +34,7 @@ public class Quiz {
             System.out.print("\nEnter question " + qNum + ": ");
             String question = sc.nextLine();
 
-            //Check - MCQ or open-ended
+            // Check - MCQ or open-ended
             System.out.print("Is it a Multiple Choice Question? (yes/no): ");
             String quesType = sc.nextLine();
 
@@ -64,7 +64,8 @@ public class Quiz {
         String difficulty = sc.nextLine();
         categories.add(difficulty);
 
-        Question q = new Question(question, options, correctOption, categories);
+        Question q = new Question(question, options, correctOption, categories, this.quizID);
+        ;
         this.questions.add(q);
         System.out.println("Question added successfully!\n");
     }
@@ -75,7 +76,7 @@ public class Quiz {
         System.out.println("Enter the proper explanation for this");
         String explanation = sc.nextLine();
 
-        Question q = new Question(question, correctAnswer,explanation);
+        Question q = new Question(question, correctAnswer, explanation, this.quizID);
         this.questions.add(q);
         System.out.println("Question added successfully!\n");
     }
@@ -95,27 +96,33 @@ public class Quiz {
         }
     }
 
+    // timer for the quiz
+
+    private TimerTask createTimerTask(int[] choices, Scanner sc, Question currentQuestion) {
+        return new TimerTask() {
+            @Override
+            public void run() {
+                System.out.println("Time's up!");
+                int timeScore = scoreQuiz(choices);
+                System.out.println("\nQuiz submitted! Your score is: " + timeScore);
+                // Continue to the next question even if time runs out
+            }
+        };
+    }
+
     // taking the quiz by participant
     public Integer TakeQuiz(Scanner sc) {
         int[] choices = new int[this.questions.size()];
 
-        // adding timer for the participant
-        Timer t = new Timer();
+        // adding timer 
         for (int i = 0; i < this.questions.size(); i++) {
             System.out.println("Timer has started. You have 30 seconds to answer!!");
             Question currentQuestion = questions.get(i);
             System.out.println(currentQuestion);
 
             // starting the timer
-            TimerTask task = new TimerTask() {
-                @Override
-                public void run() {
-                    System.out.println("Time's up!");
-                    int timeScore = scoreQuiz(choices);
-                    System.out.println("\nQuiz submitted! Your score is: " + timeScore);
-                    System.exit(0);
-                }
-            };
+            Timer t = new Timer();
+            TimerTask task = createTimerTask(choices, sc, currentQuestion);
             t.schedule(task, TIME_LIMIT * 1000);
 
             if (currentQuestion.getOptions() != null) {
@@ -129,7 +136,12 @@ public class Quiz {
                 String participantAnswer = sc.nextLine();
                 currentQuestion.setParticipantAns(participantAnswer);
             }
+
+            //cancel the timer task for the current question
+            task.cancel();
+            t.cancel();
         }
+
         displayFeedback();
         return scoreQuiz(choices);
     }
@@ -197,12 +209,12 @@ public class Quiz {
         return quiz.toString();
     }
 
-    private void displayFeedback(){
+    private void displayFeedback() {
         System.out.println("-------YOUR FEEDBACK------------");
-        for(int i=0;i<this.questions.size();i++){
+        for (int i = 0; i < this.questions.size(); i++) {
             Question currQuestion = questions.get(i);
-            System.out.println("QUESTION "+(i+1)+" -> "+currQuestion);
-            System.out.println("CORRECT ANSWER "+currQuestion.getCorrectAnswer());
+            System.out.println("QUESTION " + (i + 1) + " -> " + currQuestion);
+            System.out.println("CORRECT ANSWER " + currQuestion.getCorrectAnswer());
             if (currQuestion.getExplanation() != null) {
                 System.out.println("EXPLANATION: " + currQuestion.getExplanation());
             }
